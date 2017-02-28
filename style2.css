@@ -78,7 +78,6 @@ div.tooltip {
     background: #dbd6d6;
     pointer-events: none;
     opacity: 0;
-	border: 2px solid #FFFF9D;
 	border-radius: 6px;
 }
 div.tooltip h3 { 
