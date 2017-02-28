@@ -17,6 +17,8 @@ caption,th { text-align: left; }
 }
 /*On mouse hover lighten CD color*/
 path:hover {
+	stroke: #eef442;
+	stroke-width: 3px;
 	fill-opacity: .7;
 }
 #metrics { width: 920px; margin: 0 auto 15px 0; font-family: Helvetica, sans-serif; }
