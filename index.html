@@ -157,7 +157,7 @@ function ready(error, CD_topoJSON) {
           .attr("d", path)
           
           .on("mouseover", function(d) {
-               d3.select(this).classed("selected", true);
+               d3.select(this.parentNode.appendChild(this)).classed("selected", true);
                tooltip.transition().duration(100)
                  .style("opacity", 1)
                if (d3.event.pageX > (width - 200)) {
