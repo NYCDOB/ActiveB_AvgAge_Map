@@ -66,10 +66,14 @@
     <!-- height = 600, -->
     <!-- center = [width / 2, height / 2], -->
     <!-- defaultFill = "#e0e0e0";  -->
-var width = 1400,
+/*var width = 1400,
     height = 960,
     center = [width / 2, height / 2],
-    defaultFill = "#E1E1E1";
+    defaultFill = "#E1E1E1";*/
+var width = 1064,
+    height = 768,
+    center = [width / 2, height / 2],
+    defaultFill = "#E1E1E1"
 
 var color_domain = [12.8, 20.4, 27.1, 31.2, 34.3, 37.4]
 var ext_color_domain = [9.2, 12.8, 20.4, 27.1, 31.2, 34.3, 37.4]
@@ -95,8 +99,12 @@ var commuteById = d3.map();
     <!-- .scale(61000) -->
 	<!-- .center( [-73.85,40.71] ) -->
     <!-- .translate([width / 2, height / 2]); -->
-var projection = d3.geo.mercator()
+/*var projection = d3.geo.mercator()
     .scale(95000)
+	.center( [-73.85,40.71] )
+    .translate([width / 2, height / 2]);*/
+var projection = d3.geo.mercator()
+    .scale(75000)
 	.center( [-73.85,40.71] )
     .translate([width / 2, height / 2]);
 	
@@ -384,7 +392,8 @@ var ls_w = 25, ls_h = 25;
 legend.append("rect")
 	.attr("x", 50)
 	.attr("y", function(d, i){return height - (i*ls_h) - 2*ls_h;})
-	.attr('transform', 'translate(10, -720)') /* XY position of legend*/
+	/*.attr('transform', 'translate(10, -720)') /* XY position of legend*/*/
+	.attr('transform', 'translate(10, -529)')
 	.attr("width", ls_w)
 	.attr("height", ls_h)
 	.style("fill", function(d, i){return color(d);})
@@ -392,7 +401,8 @@ legend.append("rect")
 legend.append("text")
 	.attr("x", 80)
 	.attr("y", function(d, i){return height - (i*ls_h) - ls_h - 5;})
-	.attr('transform', 'translate(10, -720)') /* XY position of legend*/
+	/*.attr('transform', 'translate(10, -720)') /* XY position of legend*/*/
+	.attr('transform', 'translate(10, -529)')
 	.text(function(d, i){return legend_labels[i];});
 
 d3.select(self.frameElement).style("height", height + "px");
