@@ -62,11 +62,6 @@
 
 <script>
 
-
-<!-- var width = 1400, -->
-    <!-- height = 960, -->
-    <!-- center = [width / 2, height / 2], -->
-    <!-- defaultFill = "#E1E1E1"; -->
 var width = 1064,
     height = 768,
     center = [width / 2, height / 2],
@@ -92,10 +87,6 @@ var color = d3.scale.threshold()
 
 var commuteById = d3.map();
 	
-<!-- var projection = d3.geo.mercator() -->
-    <!-- .scale(95000) -->
-	<!-- .center( [-73.85,40.71] ) -->
-    <!-- .translate([width / 2, height / 2]); -->
 var projection = d3.geo.mercator()
     .scale(75000)
 	.center( [-73.85,40.71] )
@@ -385,7 +376,6 @@ var ls_w = 25, ls_h = 25;
 legend.append("rect")
 	.attr("x", 50)
 	.attr("y", function(d, i){return height - (i*ls_h) - 2*ls_h;})
-	<!-- .attr('transform', 'translate(10, -720)') /* XY position of legend*/ -->
 	.attr('transform', 'translate(10, -529)') /* XY position of legend*/
 	.attr("width", ls_w)
 	.attr("height", ls_h)
@@ -394,7 +384,6 @@ legend.append("rect")
 legend.append("text")
 	.attr("x", 80)
 	.attr("y", function(d, i){return height - (i*ls_h) - ls_h - 5;})
-	<!-- .attr('transform', 'translate(10, -720)') /* XY position of legend*/ -->
 	.attr('transform', 'translate(10, -529)') /* XY position of legend*/
 	.text(function(d, i){return legend_labels[i];});
 
