@@ -220,26 +220,25 @@ function ready(error, CD_topoJSON) {
           .attr("class", "button")
           .attr({x: 20, width: 20, height: 20})
         .append("rect")
-            .attr("y", function(d,i) { return 68 + 25*i })
+            .attr("y", function(d,i) { return 53 + 25*i })
             .attr({x: 20, width: 20, height: 20})
     // Plus button
     svg.select("#zoom_in")
       .append("line")
-        .attr({x1: 25, y1: 78, x2: 35, y2: 78 })
+        .attr({x1: 25, y1: 63, x2: 35, y2: 63 })
         .attr("stroke", "#fff")
         .attr("stroke-width", "2px");
     svg.select("#zoom_in")
       .append("line")
-        .attr({x1: 30, y1: 73, x2: 30, y2: 83 })
+        .attr({x1: 30, y1: 58, x2: 30, y2: 68 })
         .attr("stroke", "#fff")
         .attr("stroke-width", "2px");
     // Minus button
     svg.select("#zoom_out")
       .append("line")
-        .attr({x1: 25, y1: 103, x2: 35, y2: 103 })
+        .attr({x1: 25, y1: 88, x2: 35, y2: 88 })
         .attr("stroke", "#fff")
         .attr("stroke-width", "2px");
-
 
     svg.selectAll(".button")
       .on("click", function() {
@@ -377,7 +376,7 @@ var ls_w = 25, ls_h = 25;
 legend.append("rect")
 	.attr("x", 50)
 	.attr("y", function(d, i){return height - (i*ls_h) - 2*ls_h;})
-	.attr('transform', 'translate(10, -500)') /* XY position of legend*/
+	.attr('transform', 'translate(10, -515)') /* XY position of legend*/
 	.attr("width", ls_w)
 	.attr("height", ls_h)
 	.style("fill", function(d, i){return color(d);})
@@ -385,7 +384,7 @@ legend.append("rect")
 legend.append("text")
 	.attr("x", 80)
 	.attr("y", function(d, i){return height - (i*ls_h) - ls_h - 5;})
-	.attr('transform', 'translate(10, -500)') /* XY position of legend*/
+	.attr('transform', 'translate(10, -515)') /* XY position of legend*/
 	.text(function(d, i){return legend_labels[i];});
 
 d3.select(self.frameElement).style("height", height + "px");
