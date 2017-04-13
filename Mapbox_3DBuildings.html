@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.35.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.35.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<style>
+#map {
+    position: fixed;
+    width:80%;
+}
+#features {
+    width: 20%;
+    margin-left: 80%;
+    font-family: sans-serif;
+    overflow-y: scroll;
+    background-color: #fafafa;
+}
+section {
+    padding:  25px 50px;
+    line-height: 25px;
+    border-bottom: 1px solid #ddd;
+    opacity: 0.25;
+    font-size: 13px;
+}
+section.active {
+    opacity: 1;
+}
+section:last-child {
+    border-bottom: none;
+    margin-bottom: 200px;
+}
+</style>
+
+<div id='map'></div>
+<div id='features'>
+    <section id='oneWTC' class='active'>
+        <h3>ONE WORLD TRADE CENTER</h3>
+        <p>ADDRESS: 285 FULTON STREET</br>HEIGHT: 1,408'</br>BIN: 1088469</br># OF FLOORS: 104</br>YEAR BUILT: 2009</p>
+    </section>
+    <section id='empState'>
+        <h3>EMPIRE STATE BUILDING</h3>
+        <p>ADDRESS: 350 FIFTH AVENUE</br>HEIGHT: 1,239'</br>BIN: 1015862</br># OF FLOORS: 85</br>YEAR BUILT: 1931</p>
+    </section>
+    <section id='west57'>
+        <h3>157 WEST 57 STREET</h3>
+        <p>ADDRESS: 157 WEST 57 STREET</br>HEIGHT: 1,019'</br>BIN: 1088565</br># OF FLOORS: 77</br>YEAR BUILT: 2009</p>
+    </section>
+    <section id='twr4WTC'>
+        <h3>TOWER 4 WORLD TRADE CENTER</h3>
+        <p>ADDRESS: 185 GREENWICH STREET</br>HEIGHT: 978'</br>BIN: 1088795</br># OF FLOORS: 104</br>YEAR BUILT: 2009</p>
+    </section>
+    <section id='chrysler'>
+        <h3>CHRYSLER BUILDING</h3>
+        <p>ADDRESS: 405 LEXINGTON AVENUE</br>HEIGHT: 947'</br>BIN: 1036156</br># OF FLOORS: 68</br>YEAR BUILT: 1930</p>
+    </section>
+    <section id='citiGroup'>
+        <h3>CITIGROUP CENTER</h3>
+        <p>ADDRESS: 601 LEXINGTON AVENUE</br>HEIGHT: 911'</br>BIN: 1036474</br># OF FLOORS: 60</br>YEAR BUILT: 1977</p>
+    </section>
+    <section id='bankOfAmerica'>
+        <h3>BANK OF AMERICA TOWER</h3>
+        <p>ADDRESS: ONE BRYANT PARK</br>HEIGHT: 888'</br>BIN: 1087268</br># OF FLOORS: 54</br>YEAR BUILT: 2005</br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></p>
+    </section>
+</div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiYm1hbmNlbGwiLCJhIjoiY2oxZ24yd3E2MDAzdDJ3cG1jenB2dTl3cSJ9.38jhDPw4NnOpKK2mMmF_xQ';
+var map = new mapboxgl.Map({
+    style: 'mapbox://styles/mapbox/light-v9',
+    center: [-74.013075, 40.713304],
+    zoom: 16,
+    pitch: 45,
+    bearing: -17.6,
+    container: 'map'
+});
+
+var chapters = {
+    'oneWTC': {
+        bearing: 27,
+        center: [-74.013075, 40.713304],
+        zoom: 16,
+        pitch: 20
+    },
+    'empState': {
+        duration: 6000,
+        center: [-73.985773, 40.748774],
+        bearing: 27,
+        zoom: 16,
+        pitch: 20
+    },
+    'west57': {
+        bearing: 27,
+        center: [-73.979177, 40.765622],
+        zoom: 16,
+        speed: 0.6,
+        pitch: 20
+    },
+    'twr4WTC': {
+        bearing: 27,
+        center: [-74.011447, 40.711783],
+        zoom: 16
+    },
+    'chrysler': {
+        bearing: 27,
+        center: [-73.975523, 40.751873],
+        zoom: 16,
+        pitch: 20,
+        speed: 0.5
+    },
+    'citiGroup': {
+        bearing: 27,
+        center: [-73.969847, 40.758589],
+        zoom: 16
+    },
+    'bankOfAmerica': {
+        bearing: 27,
+        center: [-73.985277, 40.760913],
+        zoom: 17.3,
+        pitch: 40
+    }
+};
+
+// On every scroll event, check which element is on screen
+window.onscroll = function() {
+    var chapterNames = Object.keys(chapters);
+    for (var i = 0; i < chapterNames.length; i++) {
+        var chapterName = chapterNames[i];
+        if (isElementOnScreen(chapterName)) {
+            setActiveChapter(chapterName);
+            break;
+        }
+    }
+};
+
+var activeChapterName = 'baker';
+function setActiveChapter(chapterName) {
+    if (chapterName === activeChapterName) return;
+
+    map.flyTo(chapters[chapterName]);
+
+    document.getElementById(chapterName).setAttribute('class', 'active');
+    document.getElementById(activeChapterName).setAttribute('class', '');
+
+    activeChapterName = chapterName;
+}
+
+function isElementOnScreen(id) {
+    var element = document.getElementById(id);
+    var bounds = element.getBoundingClientRect();
+    return bounds.top < window.innerHeight && bounds.bottom > 0;
+}
+
+// the 'building' layer in the mapbox-streets vector source contains building-height
+// data from OpenStreetMap.
+map.on('load', function() {
+    map.addLayer({
+        'id': '3d-buildings',
+        'source': 'composite',
+        'source-layer': 'building',
+        'filter': ['==', 'extrude', 'true'],
+        'type': 'fill-extrusion',
+        'minzoom': 15,
+        'paint': {
+            'fill-extrusion-color': '#aaa',
+            'fill-extrusion-height': {
+                'type': 'identity',
+                'property': 'height'
+            },
+            'fill-extrusion-base': {
+                'type': 'identity',
+                'property': 'min_height'
+            },
+            'fill-extrusion-opacity': .6
+        }
+    });
+});
+</script>
+
+</body>
+</html>
