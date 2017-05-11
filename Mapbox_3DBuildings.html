@@ -14,150 +14,136 @@
 <body>
 
 <style>
-#map {
-    position: fixed;
-    width:80%;
+.map-overlay-container {
+    position: absolute;
+    width: 25%;
+    top: 0;
+    left: 0;
+    padding: 10px;
+    z-index: 1;
 }
-#features {
-    width: 20%;
-    margin-left: 80%;
-    font-family: sans-serif;
-    overflow-y: scroll;
-    background-color: #fafafa;
+
+.map-overlay {
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    background-color: #fff;
+    border-radius: 3px;
+    padding: 10px;
+    box-shadow:0 1px 2px rgba(0,0,0,0.20);
 }
-section {
-    padding:  25px 50px;
-    line-height: 25px;
-    border-bottom: 1px solid #ddd;
-    opacity: 0.25;
-    font-size: 13px;
+
+.map-overlay h2,
+.map-overlay p {
+    margin: 0 0 10px;
 }
-section.active {
-    opacity: 1;
-}
-section:last-child {
-    border-bottom: none;
-    margin-bottom: 200px;
+
+#fly {
+	width: 0;
+	height: 0px;
+	border-top: 10px solid transparent;
+	border-left: 20px solid red;
+	border-bottom: 10px solid transparent;
+	position: relative;
+	font-size: 12px;
+	margin: 0px auto;
+	display: block;
+	color: #ffffff;
+	background: none;
+	opacity: 0.5;
 }
 </style>
 
+
+
 <div id='map'></div>
-<div id='features'>
-    <section id='oneWTC' class='active'>
-        <h3>ONE WORLD TRADE CENTER</h3>
-        <p>ADDRESS: 285 FULTON STREET</br>HEIGHT: 1,408'</br>BIN: 1088469</br># OF FLOORS: 104</br>YEAR BUILT: 2009</p>
-    </section>
-    <section id='empState'>
-        <h3>EMPIRE STATE BUILDING</h3>
-        <p>ADDRESS: 350 FIFTH AVENUE</br>HEIGHT: 1,239'</br>BIN: 1015862</br># OF FLOORS: 85</br>YEAR BUILT: 1931</p>
-    </section>
-    <section id='west57'>
-        <h3>157 WEST 57 STREET</h3>
-        <p>ADDRESS: 157 WEST 57 STREET</br>HEIGHT: 1,019'</br>BIN: 1088565</br># OF FLOORS: 77</br>YEAR BUILT: 2009</p>
-    </section>
-    <section id='twr4WTC'>
-        <h3>TOWER 4 WORLD TRADE CENTER</h3>
-        <p>ADDRESS: 185 GREENWICH STREET</br>HEIGHT: 978'</br>BIN: 1088795</br># OF FLOORS: 104</br>YEAR BUILT: 2009</p>
-    </section>
-    <section id='chrysler'>
-        <h3>CHRYSLER BUILDING</h3>
-        <p>ADDRESS: 405 LEXINGTON AVENUE</br>HEIGHT: 947'</br>BIN: 1036156</br># OF FLOORS: 68</br>YEAR BUILT: 1930</p>
-    </section>
-    <section id='citiGroup'>
-        <h3>CITIGROUP CENTER</h3>
-        <p>ADDRESS: 601 LEXINGTON AVENUE</br>HEIGHT: 911'</br>BIN: 1036474</br># OF FLOORS: 60</br>YEAR BUILT: 1977</p>
-    </section>
-    <section id='bankOfAmerica'>
-        <h3>BANK OF AMERICA TOWER</h3>
-        <p>ADDRESS: ONE BRYANT PARK</br>HEIGHT: 888'</br>BIN: 1087268</br># OF FLOORS: 54</br>YEAR BUILT: 2005</br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></br></p>
-    </section>
+<button id='fly'></button>
+<div class='map-overlay-container'>
+	<div class='map-overlay'>
+		<h2 id='location-title'></h2>
+		<p id='location-description'></p>
+	</div>
 </div>
 <script>
 mapboxgl.accessToken = 'pk.eyJ1IjoiYm1hbmNlbGwiLCJhIjoiY2oxZ24yd3E2MDAzdDJ3cG1jenB2dTl3cSJ9.38jhDPw4NnOpKK2mMmF_xQ';
+
 var map = new mapboxgl.Map({
     style: 'mapbox://styles/mapbox/light-v9',
-    center: [-74.013075, 40.713304],
-    zoom: 16,
-    pitch: 45,
-    bearing: -17.6,
+        bearing: -10,
+        center: [-73.984525, 40.756354],
+        zoom: 16.3,
+        pitch: 50,
     container: 'map'
 });
+var title = document.getElementById('location-title');
+var description = document.getElementById('location-description');
 
-var chapters = {
-    'oneWTC': {
-        bearing: 27,
-        center: [-74.013075, 40.713304],
-        zoom: 16,
-        pitch: 20
-    },
-    'empState': {
-        duration: 6000,
-        center: [-73.985773, 40.748774],
-        bearing: 27,
-        zoom: 16,
-        pitch: 20
-    },
-    'west57': {
-        bearing: 27,
-        center: [-73.979177, 40.765622],
-        zoom: 16,
-        speed: 0.6,
-        pitch: 20
-    },
-    'twr4WTC': {
-        bearing: 27,
-        center: [-74.011447, 40.711783],
-        zoom: 16
-    },
-    'chrysler': {
-        bearing: 27,
-        center: [-73.975523, 40.751873],
-        zoom: 16,
-        pitch: 20,
-        speed: 0.5
-    },
-    'citiGroup': {
-        bearing: 27,
-        center: [-73.969847, 40.758589],
-        zoom: 16
-    },
-    'bankOfAmerica': {
-        bearing: 27,
-        center: [-73.985277, 40.760913],
-        zoom: 17.3,
-        pitch: 40
+var locations = [{
+	"id": "1",
+    "title": "Bank of America",
+    "description": "ADDRESS: One Bryant Park, HEIGHT: 888', BIN: 1087268, # OF FLOORS: 54, YEAR BUILT: 2005",
+    "camera": {
+        bearing: -10,
+        center: [-73.984525, 40.756354],
+        zoom: 16.3,
+        pitch: 50
     }
+}, {
+	"id": "2",
+    "title": "200 West Street",
+    "description": "ADDRESS: 200 WEST STREET, HEIGHT: 741', BIN: 1087239, # OF FLOORS: 44, YEAR BUILT: 2006",
+    "camera": {
+        center: [-74.015291, 40.715066],
+        bearing: -75,
+        zoom: 16.2,
+        pitch: 50
+    }
+}, {
+	"id": "3",
+    "title": "THE NEW YORK TIMES BUILDING",
+    "description": "ADDRESS:620 8 AVENUE, HEIGHT: 755', BIN: 1087186, # OF FLOORS: 52, YEAR BUILT: 2003",
+    "camera": {
+        center: [-73.989804, 40.757213],
+        bearing: 0,
+        zoom: 16.6,
+        pitch: 50
+    }
+}, {
+	"id": "4",
+    "title": "BLOOMBERG BUILDING",
+    "description": "ADDRESS: 136 EAST 59 STREET, HEIGHT: 806', BIN: 1086160, # OF FLOORS: 54, YEAR BUILT: 2001",
+    "camera": {
+        bearing: 65,
+        center: [-73.967506, 40.762174],
+        zoom: 16.7,
+        pitch: 50
+    }
+}];
+
+
+document.getElementById('fly').addEventListener('click', function () {
+	nextBuilding();
+});
+var myIndex = 0;
+
+function nextBuilding(){
+	
+	myIndex = (myIndex+1)%(locations.length);
+	playback(myIndex);
+} 
+
+	function playback(index) {
+    title.textContent = locations[index].title;
+    description.textContent = locations[index].description;
+
+	locations[index].id ? locations[index].id : '';
+	
+    map.flyTo(locations[index].camera);
+
 };
 
-// On every scroll event, check which element is on screen
-window.onscroll = function() {
-    var chapterNames = Object.keys(chapters);
-    for (var i = 0; i < chapterNames.length; i++) {
-        var chapterName = chapterNames[i];
-        if (isElementOnScreen(chapterName)) {
-            setActiveChapter(chapterName);
-            break;
-        }
-    }
-};
+// Display the last title/description first
+title.textContent = locations[locations.length - 1].title;
+description.textContent = locations[locations.length - 1].description;
 
-var activeChapterName = 'baker';
-function setActiveChapter(chapterName) {
-    if (chapterName === activeChapterName) return;
-
-    map.flyTo(chapters[chapterName]);
-
-    document.getElementById(chapterName).setAttribute('class', 'active');
-    document.getElementById(activeChapterName).setAttribute('class', '');
-
-    activeChapterName = chapterName;
-}
-
-function isElementOnScreen(id) {
-    var element = document.getElementById(id);
-    var bounds = element.getBoundingClientRect();
-    return bounds.top < window.innerHeight && bounds.bottom > 0;
-}
 
 // the 'building' layer in the mapbox-streets vector source contains building-height
 // data from OpenStreetMap.
@@ -169,6 +155,7 @@ map.on('load', function() {
         'filter': ['==', 'extrude', 'true'],
         'type': 'fill-extrusion',
         'minzoom': 15,
+		'interactive': true,
         'paint': {
             'fill-extrusion-color': '#aaa',
             'fill-extrusion-height': {
@@ -179,9 +166,11 @@ map.on('load', function() {
                 'type': 'identity',
                 'property': 'min_height'
             },
-            'fill-extrusion-opacity': .6
+            'fill-extrusion-opacity': .9
         }
     });
+	document.getElementById('fly').focus();
+	playback(0);
 });
 </script>
 
