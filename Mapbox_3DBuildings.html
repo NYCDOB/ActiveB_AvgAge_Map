@@ -67,10 +67,10 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiYm1hbmNlbGwiLCJhIjoiY2oxZ24yd3E2MDAzdDJ3cG1je
 
 var map = new mapboxgl.Map({
     style: 'mapbox://styles/mapbox/light-v9',
-        bearing: -10,
-        center: [-73.984525, 40.756354],
-        zoom: 16.3,
-        pitch: 50,
+        bearing: 15,
+        center: [-73.996832, 40.722692],
+        zoom: 13,
+        pitch: 80,
     container: 'map'
 });
 var title = document.getElementById('location-title');
@@ -78,6 +78,16 @@ var description = document.getElementById('location-description');
 
 var locations = [{
 	"id": "1",
+    "title": "NEW YORK CITY",
+    "description": "",
+    "camera": {
+        bearing: 15,
+        center: [-73.996832, 40.722692],
+        zoom: 13,
+        pitch: 80
+    }
+}, {
+	"id": "2",
     "title": "Bank of America",
     "description": "ADDRESS: One Bryant Park, HEIGHT: 888', BIN: 1087268, # OF FLOORS: 54, YEAR BUILT: 2005",
     "camera": {
@@ -87,7 +97,7 @@ var locations = [{
         pitch: 50
     }
 }, {
-	"id": "2",
+	"id": "3",
     "title": "200 West Street",
     "description": "ADDRESS: 200 WEST STREET, HEIGHT: 741', BIN: 1087239, # OF FLOORS: 44, YEAR BUILT: 2006",
     "camera": {
@@ -97,7 +107,7 @@ var locations = [{
         pitch: 50
     }
 }, {
-	"id": "3",
+	"id": "4",
     "title": "THE NEW YORK TIMES BUILDING",
     "description": "ADDRESS:620 8 AVENUE, HEIGHT: 755', BIN: 1087186, # OF FLOORS: 52, YEAR BUILT: 2003",
     "camera": {
@@ -107,7 +117,7 @@ var locations = [{
         pitch: 50
     }
 }, {
-	"id": "4",
+	"id": "5",
     "title": "BLOOMBERG BUILDING",
     "description": "ADDRESS: 136 EAST 59 STREET, HEIGHT: 806', BIN: 1086160, # OF FLOORS: 54, YEAR BUILT: 2001",
     "camera": {
@@ -154,7 +164,7 @@ map.on('load', function() {
         'source-layer': 'building',
         'filter': ['==', 'extrude', 'true'],
         'type': 'fill-extrusion',
-        'minzoom': 15,
+        'minzoom': 14.5,
 		'interactive': true,
         'paint': {
             'fill-extrusion-color': '#aaa',
