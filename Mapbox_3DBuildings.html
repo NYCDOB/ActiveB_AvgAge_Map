@@ -21,6 +21,7 @@
     left: 0;
     padding: 10px;
     z-index: 1;
+	
 }
 
 .map-overlay {
@@ -28,12 +29,18 @@
     background-color: #fff;
     border-radius: 3px;
     padding: 10px;
-    box-shadow:0 1px 2px rgba(0,0,0,0.20);
+    box-shadow:0 3px 4px rgba(0,0,0,0.20);
+	opacity: 0.9;
+	width: 420px;
 }
-
-.map-overlay h2,
-.map-overlay p {
+.map-overlay h1 {
+	margin: 0 0 10px;
+	font-size: 30px;
+}
+<!-- .map-overlay h2, -->
+.map-overlay h2 {
     margin: 0 0 10px;
+	font-size: 20px;
 }
 
 #fly {
@@ -50,6 +57,7 @@
 	background: none;
 	opacity: 0.5;
 }
+
 </style>
 
 
@@ -58,8 +66,13 @@
 <button id='fly'></button>
 <div class='map-overlay-container'>
 	<div class='map-overlay'>
-		<h2 id='location-title'></h2>
-		<p id='location-description'></p>
+		<h1 id='location-title'></h1>
+		<h2 id='location-description'></h2>
+		<h2 id='location-address'></h2>		
+		<h2 id='location-bin'></h2>
+		<h2 id='location-height'></h2>
+		<h2 id='location-numFloors'></h2>
+		<h2 id='location-yearBuilt'></h2>
 	</div>
 </div>
 <script>
@@ -75,11 +88,15 @@ var map = new mapboxgl.Map({
 });
 var title = document.getElementById('location-title');
 var description = document.getElementById('location-description');
+var address = document.getElementById('location-address');
+var bin = document.getElementById('location-bin');
+var numFloors = document.getElementById('location-numFloors');
+var height = document.getElementById('location-height');
+var yearBuilt = document.getElementById('location-yearBuilt');
 
 var locations = [{
 	"id": "1",
     "title": "NEW YORK CITY",
-    "description": "",
     "camera": {
         bearing: 15,
         center: [-73.996832, 40.722692],
@@ -88,8 +105,13 @@ var locations = [{
     }
 }, {
 	"id": "2",
-    "title": "Bank of America",
-    "description": "ADDRESS: One Bryant Park, HEIGHT: 888', BIN: 1087268, # OF FLOORS: 54, YEAR BUILT: 2005",
+    "title": "BANK OF AMERICA",
+    //"description": "ADDRESS: One Bryant Park, HEIGHT: 888', BIN: 1087268, # OF FLOORS: 54, YEAR BUILT: 2005",
+	"address": "ADDRESS: ONE BRYANT PARK",
+	"bin": "BIN: 1087268",
+	"numFloors": "# OF FLOORS: 54",
+	"height": "HEIGHT: 888'",
+	"yearBuilt": "YEAR BUILT: 2005",
     "camera": {
         bearing: -10,
         center: [-73.984525, 40.756354],
@@ -98,8 +120,13 @@ var locations = [{
     }
 }, {
 	"id": "3",
-    "title": "200 West Street",
-    "description": "ADDRESS: 200 WEST STREET, HEIGHT: 741', BIN: 1087239, # OF FLOORS: 44, YEAR BUILT: 2006",
+    "title": "GOLDMAN SACHS TOWER",
+    //"description": "ADDRESS: 200 WEST STREET, HEIGHT: 741', BIN: 1087239, # OF FLOORS: 44, YEAR BUILT: 2006",
+	"address": "ADDRESS: 200 WEST STREET",
+	"bin": "BIN: 1087239",
+	"numFloors": "# OF FLOORS: 44",
+	"height": "HEIGHT: 741'",
+	"yearBuilt": "YEAR BUILT: 2006",
     "camera": {
         center: [-74.015291, 40.715066],
         bearing: -75,
@@ -108,8 +135,13 @@ var locations = [{
     }
 }, {
 	"id": "4",
-    "title": "THE NEW YORK TIMES BUILDING",
-    "description": "ADDRESS:620 8 AVENUE, HEIGHT: 755', BIN: 1087186, # OF FLOORS: 52, YEAR BUILT: 2003",
+    "title": "NEW YORK TIMES BUILDING",
+    //"description": "ADDRESS:620 8 AVENUE, HEIGHT: 755', BIN: 1087186, # OF FLOORS: 52, YEAR BUILT: 2003",
+	"address": "ADDRESS: 620 8 AVENUE",
+	"bin": "BIN: 1087186",
+	"numFloors": "# OF FLOORS: 52",
+	"height": "HEIGHT: 755'",
+	"yearBuilt": "YEAR BUILT: 2003",
     "camera": {
         center: [-73.989804, 40.757213],
         bearing: 0,
@@ -118,8 +150,13 @@ var locations = [{
     }
 }, {
 	"id": "5",
-    "title": "BLOOMBERG BUILDING",
-    "description": "ADDRESS: 136 EAST 59 STREET, HEIGHT: 806', BIN: 1086160, # OF FLOORS: 54, YEAR BUILT: 2001",
+    "title": "BLOOMBERG TOWER",
+    //"description": "ADDRESS: 136 EAST 59 STREET, HEIGHT: 806', BIN: 1086160, # OF FLOORS: 54, YEAR BUILT: 2001",
+	"address": "ADDRESS: 731 LEXINGTON AVENUE",
+	"bin": "BIN: 1086160",
+	"numFloors": "# OF FLOORS: 54",
+	"height": "HEIGHT: 806'",
+	"yearBuilt": "YEAR BUILT: 2001",
     "camera": {
         bearing: 65,
         center: [-73.967506, 40.762174],
@@ -143,17 +180,17 @@ function nextBuilding(){
 	function playback(index) {
     title.textContent = locations[index].title;
     description.textContent = locations[index].description;
+	address.textContent = locations[index].address;
+	bin.textContent = locations[index].bin;
+	numFloors.textContent = locations[index].numFloors;
+	height.textContent = locations[index].height;
+	yearBuilt.textContent = locations[index].yearBuilt;
 
 	locations[index].id ? locations[index].id : '';
 	
     map.flyTo(locations[index].camera);
 
 };
-
-// Display the last title/description first
-title.textContent = locations[locations.length - 1].title;
-description.textContent = locations[locations.length - 1].description;
-
 
 // the 'building' layer in the mapbox-streets vector source contains building-height
 // data from OpenStreetMap.
@@ -180,8 +217,35 @@ map.on('load', function() {
         }
     });
 	document.getElementById('fly').focus();
+
 	playback(0);
+	
+	//ADD GEOJSON
+	map.addSource('bldgSource', {
+		'type': 'geojson',
+		'data': 'data/BOA_1.geojson'
+	})
+	map.addLayer({
+		'id': 'bldg-layer',
+		'source': 'bldgSource',
+		'type': 'fill-extrusion',
+		'minzoom': 14.5,
+		'paint': {
+            'fill-extrusion-color': '#fd6b50',
+            'fill-extrusion-height': {
+                'type': 'identity',
+                'property': 'height'
+            },
+            'fill-extrusion-base': {
+                'type': 'identity',
+                'property': 'min_height'
+            },
+            'fill-extrusion-opacity': .6
+        }	
+	})
 });
+
+
 </script>
 
 </body>
