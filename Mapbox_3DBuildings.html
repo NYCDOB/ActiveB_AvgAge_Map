@@ -158,8 +158,10 @@ var locations = [{
 	"height": "HEIGHT: 806'",
 	"yearBuilt": "YEAR BUILT: 2001",
     "camera": {
-        bearing: 65,
-        center: [-73.967506, 40.762174],
+        //bearing: 65,
+		bearing: 0,
+        //center: [-73.967506, 40.762174],
+		center: [-73.967506, 40.76231870614939],
         zoom: 16.7,
         pitch: 50
     }
@@ -240,9 +242,34 @@ map.on('load', function() {
                 'type': 'identity',
                 'property': 'min_height'
             },
-            'fill-extrusion-opacity': .6
+            'fill-extrusion-opacity': .8
         }	
 	})
+	
+	map.addSource('bldgSource2', {
+		'type': 'geojson',
+		'data': 'data/bloombergTower.geojson'
+	})
+	map.addLayer({
+		'id': 'bldg-layer2',
+		'source': 'bldgSource2',
+		'type': 'fill-extrusion',
+		'minzoom': 14.5,
+		'paint': {
+            'fill-extrusion-color': '#fd6b50',
+            'fill-extrusion-height': {
+                'type': 'identity',
+                'property': 'height'
+            },
+            'fill-extrusion-base': {
+                'type': 'identity',
+                'property': 'min_height'
+            },
+            'fill-extrusion-opacity': .8
+        }	
+	})
+	
+
 });
 
 
