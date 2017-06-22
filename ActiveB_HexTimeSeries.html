@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Active B Complaints</title>
+    <style>
+      <!-- #wrapper { -->
+          <!-- width: 1064px; -->
+          <!-- margin: -30px auto 0; -->
+      <!-- } -->
+      <!-- #map { -->
+          <!-- width: 1064px; -->
+          <!-- height: 820px; -->
+          <!-- position: relative; -->
+      <!-- } -->
+      .stroke {
+        fill: none;
+        stroke: #888;
+        stroke-width: 2px;
+      }
+      
+      .fill {
+        fill: #fff;
+      }
+
+      
+      .land {
+        fill: #222;
+      }
+      
+      .boundary {
+        fill: none;
+        stroke: #fff;
+        stroke-width: .5px;
+      }
+      .collection {
+          fill: gray;
+          stroke: white;
+      }
+	#legend {
+		font-size: 12px;
+		position: absolute;
+
+	}
+      #play, #clock {
+      	position: absolute;
+      	top: 75px;
+      }
+      #play {
+		top: 115px;
+      	left: 15px;
+      }
+      #clock {
+      	left: 15px;
+		font-size: 32px;
+		font-family: "Arial", "Verdana", Sans-serif;
+		font-weight: bold;
+		color: #9C9C9C;
+      }
+	h1 {
+		font-size: 40px;
+		position: absolute;
+		top: -15px;
+		left: 15px;
+		font-family: "Arial", "Verdana", Sans-serif;
+		font-weight: bold;
+		color: #6B0000;
+		}
+	h2 {
+		font-size: 16px;
+		position: absolute;
+		left: 15px;
+		top: 145px;
+		font-family: "Arial", "Verdana", Sans-serif;
+		font-weight: bold;
+		color: black;
+	}
+	h3 {
+		font-size: 8px;
+	}
+    </style>
+</head>
+
+<body>
+
+	<div id="wrapper">	
+		<h1>Active B Complaints</h1>
+		<h2>Average Workdays</h2>
+		<div id="map"></div>
+		<button id="play">play</button>
+		<span id="clock">8/1/2016</span>
+	</div>
+
+	<div id="tooltip" class="tooltip">
+		<h3 class="id"></h3>
+			<div data-metric="9/22/2016" class="line">
+			<!-- <div class="AvgAge symbol"></div> Average Age  -->
+
+		</div>
+	</div> 
+
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/d3.geo.projection.v0.min.js"></script>
+<script src="https://d3js.org/queue.v1.min.js"></script>
+<script src="https://d3js.org/topojson.v1.min.js"></script>
+<script>
+  //globals
+var width, height, center, projection, path, svg, attributeArray = [], currentAttribute = 0, playing = false, g;
+var legend_labels = ["0 - 15", "16 - 41", "42 - 69", "70 - 100", "101 - 136", "137 - 187", "188 - 300"]
+var color_domain = [16,42,70,101,137,188]
+var ext_color_domain = [0,16,42,70,101,137,188]
+var color = d3.scale.threshold()
+	.domain(color_domain)
+	.range(["#FFFF80","#FCE062","#F7C348","#F2A72E","#C46D1B","#963A0C","#590000"]);
+width = 1064, height = 820;  // map width and height, matches 
+center = [width / 2, height / 2];
+projection = d3.geo.mercator()   // define our projection with parameters
+.scale(82500)
+.center( [-73.9,40.712] )
+.translate([width / 2, height / 2]);
+
+path = d3.geo.path()  // create path generator function
+  .projection(projection);  // add our define projection to it
+
+
+svg = d3.select("#map").append("svg")   // append a svg to our html div to hold our map
+  .attr("width", width)
+  .attr("height", height);
+
+
+loadData();  // let's load our data next
+g = svg.append("g");
+
+
+function init() {
+
+  //setMap();
+  animateMap();
+
+}
+
+function setMap() {
+
+  width = 1064, height = 820;  // map width and height, matches 
+  center = [width / 2, height / 2];
+  projection = d3.geo.mercator()   // define our projection with parameters
+    .scale(82500)
+	.center( [-73.9,40.712] )
+    .translate([width / 2, height / 2]);
+
+  path = d3.geo.path()  // create path generator function
+      .projection(projection);  // add our define projection to it
+
+
+  svg = d3.select("#wrapper").append("svg")   // append a svg to our html div to hold our map
+      .attr("width", width)
+      .attr("height", height);
+
+
+  loadData();  // let's load our data next
+
+}
+
+function loadData() {
+
+  queue()   // queue function loads all external data files asynchronously 
+    .defer(d3.json, "data/HexCollection3.json")  // our geometries
+    .defer(d3.csv, "data/AvgAge_080116_060717.csv")  // and associated data in csv file
+    .await(processData);   // once all files are loaded, call the processData function passing
+                           // the loaded objects as arguments
+}
+
+function processData(error,hex,hexData) {
+  // function accepts any errors from the queue function as first argument, then
+  // each data object in the order of chained defer() methods above
+  var collections = hex.objects.collection.geometries;  // store the path in variable for ease
+  for (var i in collections) {    // for each geometry object
+    for (var j in hexData) {  // for each row in the CSV
+      if(collections[i].properties.id == hexData[j].id) {   // if they match
+	  //if(collections[i].id == hexData[j].id) {   // if they match
+        for(var k in hexData[j]) {   // for each column in the a row within the CSV
+          if(k != 'name' && k != 'id') {  // let's not add the name or id as props since we already have them
+            if(attributeArray.indexOf(k) == -1) { 
+               attributeArray.push(k);  // add new column headings to our array for later
+            }
+            collections[i].properties[k] = Number(hexData[j][k])  // add each CSV column key/value to geometry object
+			//collections[i][k] = Number(hexData[j][k])  // add each CSV column key/value to geometry object
+          } 
+        }
+        break;  // stop looking through the CSV since we made our match
+      }
+    }
+  }
+  
+
+  d3.select('#clock').html(attributeArray[currentAttribute]);  // populate the clock initially with the current date
+  drawMap(hex);  // let's mug the map now with our newly populated data object
+}
+
+function drawMap(hex) {
+
+    svg.selectAll(".collection")   // select collection objects (which don't exist yet)
+      .data(topojson.feature(hex, hex.objects.collection).features)  // bind data to these non-existent objects
+      .enter().append("path") // prepare data to be appended to paths
+      .attr("class", "collection") // give them a class for styling and access later
+	  .attr("id", function(d) { return "code_" + d.properties.id; }, true)  // give each a unique id for access later
+      <!-- .attr("id", function(d) { return "code_" + d.id; }, true)  // give each a unique id for access later -->
+      .attr("d", path); // create them using the svg path generator defined above
+	  
+    var dataRange = getDataRange(); // get the min/max values from the current date's range of data values
+    d3.selectAll('.collection')  // select all the collections
+    <!-- .attr('fill-opacity', function(d) { -->
+        <!-- return getColor(d.properties[attributeArray[currentAttribute]], dataRange);  // give them an opacity value based on their current value -->
+		<!-- //return getColor(d.id [attributeArray[currentAttribute]], dataRange);  // give them an opacity value based on their current value -->
+    <!-- });	 -->
+	.style("fill", function (d) {
+		return getColor(d.properties[attributeArray[currentAttribute]], dataRange);
+	});
+
+}
+
+function sequenceMap() {
+  
+    var dataRange = getDataRange(); // get the min/max values from the current date's range of data values
+    <!-- d3.selectAll('.collection').transition()  //select all the collections and prepare for a transition to new values -->
+	d3.selectAll('.collection')
+      <!-- .duration(750)  // give it a smooth time period for the transition -->
+      <!-- .attr('fill-opacity', function(d) { -->
+        <!-- return getColor(d.properties[attributeArray[currentAttribute]], dataRange);  // the end color value -->
+		<!-- //return getColor(d.id[attributeArray[currentAttribute]], dataRange);  // the end color value -->
+      <!-- }) -->
+	.style("fill", function (d) {
+		return getColor(d.properties[attributeArray[currentAttribute]], dataRange);
+	});
+
+}
+
+
+<!-- function getColor(valueIn, valuesIn) { -->
+  <!-- var nullColor = "#9C9C9C"; -->
+  <!-- var color = d3.scale.linear() // create a linear scale -->
+    <!-- //.domain([valuesIn[0],valuesIn[1]])  // input uses min and max values -->
+	<!-- .domain([0.23,300.56]) -->
+    <!-- //.range([.3,5]);   // output for opacity between .3 and 1 % -->
+	<!-- //.range(["#FFFF80", "#6B0601"]).interpolate(d3.interpolateLab); -->
+	<!-- .range(["#FFFF80", "#540501"]).interpolate(d3.interpolateLab); -->
+	<!-- //.range(["#FFFF80", "red"]).interpolate(d3.interpolateLab); -->
+	<!-- if (valueIn == undefined){ -->
+		<!-- return nullColor} else{ -->
+	<!-- return color(valueIn)  // return that number to the caller -->
+	<!-- } -->
+<!-- } -->
+function getColor(valueIn, valuesIn) {
+  var nullColor = "#9C9C9C";
+
+
+	if (valueIn == undefined || valueIn == 0){
+		return nullColor} else{
+	return color(valueIn)  // return that number to the caller
+	}
+}
+
+<!-- function getColor(valueIn, valuesIn) { -->
+
+  <!-- var color = d3.scale.quantize() -->
+    <!-- .domain([0.68, 300.56]) -->
+	<!-- .range(d3.range(7).map(function(i) { return "q" + i + "-7"; })); -->
+
+  <!-- return color(valueIn);  // return that number to the caller -->
+<!-- } -->
+
+function getDataRange() {
+  // function loops through all the data values from the current data attribute
+  // and returns the min and max values
+
+  var min = Infinity, max = -Infinity;  
+
+  d3.selectAll('.collection')
+    .each(function(d,i) {
+      var currentValue = d.properties[attributeArray[currentAttribute]];
+	  //var currentValue = d[attributeArray[currentAttribute]];
+      if(currentValue <= min && currentValue != -99 && currentValue != 'undefined') {
+        min = currentValue;
+      }
+      if(currentValue >= max && currentValue != -99 && currentValue != 'undefined') {
+        max = currentValue;
+      }
+  });
+  return [min,max];  //boomsauce
+}
+
+function animateMap() {
+
+  var timer;  // create timer object
+  d3.select('#play')  
+    .on('click', function() {  // when user clicks the play button
+      if(playing == false) {  // if the map is currently playing
+        timer = setInterval(function(){   // set a JS interval
+          if(currentAttribute < attributeArray.length-1) {  
+              currentAttribute +=1;  // increment the current attribute counter
+          } else {
+              currentAttribute = 0;  // or reset it to zero
+          }
+          sequenceMap();  // update the representation of the map 
+          d3.select('#clock').html(attributeArray[currentAttribute]);  // update the clock
+        }, 40);
+      
+        d3.select(this).html('stop');  // change the button label to stop
+        playing = true;   // change the status of the animation
+      } else {    // else if is currently playing
+        clearInterval(timer);   // stop the animation by clearing the interval
+        d3.select(this).html('play');   // change the button label to play
+        playing = false;   // change the status again
+      }
+  });
+}
+
+var legend = svg.selectAll("g.legend")
+	.data(ext_color_domain)
+	.enter().append("g")
+	.style("font-size", "14px")
+	.style("font-family", "Arial, Helvetica, sans-serif")
+	.attr("class", "legend");
+	
+var ls_w = 25, ls_h = 25;
+
+legend.append("rect")
+	.attr("x", 50)
+	.attr("y", function(d, i){return height - (i*ls_h) - 2*ls_h;})
+	//.attr('transform', 'translate(10, -720)') /* XY position of legend*/
+	.attr('transform', 'translate(-40, -450)') /* XY position of legend*/
+	.attr("width", ls_w)
+	.attr("height", ls_h)
+	.style("fill", function(d, i){return color(d);})
+	.style("opacity", 0.8);
+legend.append("text")
+	.attr("x", 80)
+	.attr("y", function(d, i){return height - (i*ls_h) - ls_h - 5;})
+	//.attr('transform', 'translate(10, -720)') /* XY position of legend*/
+	.attr('transform', 'translate(-40, -450)') /* XY position of legend*/
+	.text(function(d, i){return legend_labels[i];});
+
+window.onload = init();  // magic starts here
+  
+</script>
+</body>
+</html>
